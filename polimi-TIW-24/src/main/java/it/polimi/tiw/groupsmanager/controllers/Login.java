@@ -19,14 +19,14 @@ import it.polimi.tiw.groupsmanager.beans.User;
 import it.polimi.tiw.groupsmanager.dao.UserDAO;
 import it.polimi.tiw.groupsmanager.exceptions.IllegalCredentialsException;
 
-@WebServlet("/register")
+@WebServlet("/login")
 @MultipartConfig
-public class Register extends HttpServlet {
-
+public class Login extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 
-	public Register() {
+	public Login() {
 		super();
 	}
 	
@@ -48,17 +48,16 @@ public class Register extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendRedirect(getServletContext().getContextPath() + "/register.html");
+		response.sendRedirect(getServletContext().getContextPath() + "/login.html");
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String username = request.getParameter("username");
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		
 		String error = null;
 		
-		if (username == null || username.isEmpty() || email == null || email.isEmpty() || password == null || password.isEmpty()) {
+		if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
 			error = "Some parameters are empty";
 		}
 		
@@ -70,7 +69,7 @@ public class Register extends HttpServlet {
 		
 		UserDAO udao = new UserDAO(connection);
 		try {
-			User user = udao.createUser(username, email, password);
+			User user = udao.checkCredentials(email, password);
 		} catch (IllegalCredentialsException | SQLException | NoSuchAlgorithmException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println(e.getMessage());
@@ -80,6 +79,7 @@ public class Register extends HttpServlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
+		response.sendRedirect(getServletContext().getContextPath() + "/index.html");
 	}
 	
 	public void destroy() {
@@ -90,5 +90,5 @@ public class Register extends HttpServlet {
 		} catch (SQLException sqle) {
 		}
 	}
-	
+
 }

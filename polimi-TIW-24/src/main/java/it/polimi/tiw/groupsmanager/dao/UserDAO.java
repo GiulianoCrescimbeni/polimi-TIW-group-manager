@@ -1,5 +1,7 @@
 package it.polimi.tiw.groupsmanager.dao;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,11 +53,14 @@ public class UserDAO {
 		return user;
 	}
 	
-	public User checkCredentials(String email, String password) throws SQLException, IllegalCredentialsException {
-		String query = "SELECT  id, username, email FROM user WHERE email = ? AND password =?";
+	public User checkCredentials(String email, String password) throws SQLException, IllegalCredentialsException, NoSuchAlgorithmException {
+		String query = "SELECT  id, username, email FROM users WHERE email = ? AND password =?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+			messageDigest.update(password.getBytes());
+			String passwordHash = new String(messageDigest.digest());
 			pstatement.setString(1, email);
-			pstatement.setString(2, password);
+			pstatement.setString(2, passwordHash);
 			try (ResultSet result = pstatement.executeQuery();) {
 				if (!result.isBeforeFirst()) 
 					throw new IllegalCredentialsException("Invalid Email or Password");
@@ -71,7 +76,7 @@ public class UserDAO {
 		}
 	}
 	
-	public User createUser(String username, String email, String password) throws SQLException, IllegalCredentialsException {
+	public User createUser(String username, String email, String password) throws SQLException, IllegalCredentialsException, NoSuchAlgorithmException {
 		String query = "SELECT id FROM users WHERE email = ?";
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setString(1, email);
@@ -93,10 +98,13 @@ public class UserDAO {
 		query = "INSERT into users (username, email, password)   VALUES(?, ?, ?)";
 		PreparedStatement pstatement = null;
 		try {
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+			messageDigest.update(password.getBytes());
+			String passwordHash = new String(messageDigest.digest());
 			pstatement = con.prepareStatement(query);
 			pstatement.setString(1, username);
 			pstatement.setString(2, email);
-			pstatement.setString(3, password);
+			pstatement.setString(3, passwordHash);
 			pstatement.executeUpdate();
 		} catch (SQLException e) {
 			throw new SQLException(e);
