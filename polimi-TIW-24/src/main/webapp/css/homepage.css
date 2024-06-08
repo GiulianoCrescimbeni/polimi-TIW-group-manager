@@ -8,7 +8,7 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.register-container {
+.upload-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,22 +16,22 @@ body {
     height: 100%;
 }
 
-.register-card {
+.upload-card {
     background-color: #FFFFFF;
     padding: 3em;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
 }
 
-.register-card h1 {
+.upload-card h1 {
     color: #00796B;
     margin-bottom: 1em;
 }
 
-.register-card input {
+.upload-card input {
     display: block;
     width: 100%;
     padding: 0.75em;
@@ -42,8 +42,8 @@ body {
     background-color: #FFFFFF;
 }
 
-.register-card button {
-    background-color: #00796B;
+.upload-card button {
+    background-color: #004D40;
     color: #FFFFFF;
     border: none;
     border-radius: 5px;
@@ -53,19 +53,6 @@ body {
     font-size: 1em;
 }
 
-.register-card button:hover {
-    background-color: #004D40;
-}
-
-.link-container {
-    margin-top: 1em;
-}
-
-.link-container a {
-    color: #00796B;
-    text-decoration: none;
-}
-
-.link-container a:hover {
-    text-decoration: underline;
+.upload-card button:hover {
+    background-color: #00796B;
 }
