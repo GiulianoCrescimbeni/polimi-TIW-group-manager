@@ -62,7 +62,7 @@ public class Register extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(true);
-		if(session.getAttribute("user") == null) {
+		if(session.getAttribute("userId") == null) {
 			String path = "/WEB-INF/register.html";
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -79,11 +79,16 @@ public class Register extends HttpServlet {
 		String username = request.getParameter("username");
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
+		String verifyPassword = request.getParameter("verifypassword");
 		
 		String error = null;
 		
-		if (username == null || username.isEmpty() || email == null || email.isEmpty() || password == null || password.isEmpty()) {
-			error = "Some parameters are empty";
+		if (username == null || username.isEmpty() || email == null || email.isEmpty() || password == null || password.isEmpty() || verifyPassword == null || verifyPassword.isEmpty()) {
+			error = "Missing parameters";
+		}
+		
+		if(!password.equals(verifyPassword)) {
+			error = "Passwords do not match";
 		}
 		
 		if (error != null) {
@@ -96,7 +101,7 @@ public class Register extends HttpServlet {
 		try {
 			HttpSession session = request.getSession(true);
 			User user = udao.createUser(username, email, password);
-			session.setAttribute("user", user);
+			session.setAttribute("userId", user.getId());
 		} catch (IllegalCredentialsException | SQLException | NoSuchAlgorithmException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println(e.getMessage());

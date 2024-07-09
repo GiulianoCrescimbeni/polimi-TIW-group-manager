@@ -5,6 +5,9 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -25,15 +28,14 @@ import it.polimi.tiw.groupsmanager.beans.User;
 import it.polimi.tiw.groupsmanager.dao.UserDAO;
 import it.polimi.tiw.groupsmanager.exceptions.IllegalCredentialsException;
 
-@WebServlet("/login")
+@WebServlet("/invitation")
 @MultipartConfig
-public class Login extends HttpServlet {
-	
+public class Invitation extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	private TemplateEngine templateEngine;
 
-	public Login() {
+	public Invitation() {
 		super();
 	}
 	
@@ -61,60 +63,33 @@ public class Login extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(true);
-		if(session.getAttribute("userId") == null) {
-			String path = "/WEB-INF/login.html";
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			templateEngine.process(path, ctx, response.getWriter());
-		} else {
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			response.sendRedirect(getServletContext().getContextPath() + "/homepage");
-		}
-	}
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String email = request.getParameter("email");
-		String password = request.getParameter("password");
-		
-		String error = null;
-		
-		if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-			error = "Some parameters are empty";
-		}
-		
-		if (error != null) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println(error);
-			return;
-		}
-		
-		UserDAO udao = new UserDAO(connection);
-		try {
-			HttpSession session = request.getSession(true);
-			User user = udao.checkCredentials(email, password);
-			session.setAttribute("userId", user.getId());
-		} catch (IllegalCredentialsException | SQLException | NoSuchAlgorithmException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println(e.getMessage());
-			return;
-		} 
-		
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-		response.sendRedirect(getServletContext().getContextPath() + "/homepage");
-	}
-	
-	public void destroy() {
-		try {
-			if (connection != null) {
-				connection.close();
-			}
-		} catch (SQLException sqle) {
-		}
+	    HttpSession session = request.getSession(true);
+	    if (session.getAttribute("groupTitle") == null) {
+	        response.setStatus(HttpServletResponse.SC_OK);
+	        response.setContentType("application/json");
+	        response.setCharacterEncoding("UTF-8");
+	        response.sendRedirect(getServletContext().getContextPath() + "/homepage");
+	    } else {
+	        String path = "/WEB-INF/invitation.html";
+	        ServletContext servletContext = getServletContext();
+	        UserDAO udao = new UserDAO(connection);
+	        List<String> usernames = new ArrayList<>();
+	        try {
+	            List<User> users = udao.findAllUsers();
+	            User thisUser = udao.findUserById((int) session.getAttribute("userId"));
+	            users.stream()
+	                 .filter(user -> !user.getUsername().equals(thisUser.getUsername()))
+	                 .forEach(user -> usernames.add(user.getUsername()));
+	        } catch (SQLException e) {
+	            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	            response.getWriter().println(e.getMessage());
+	            return;
+	        }
+
+	        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+	        ctx.setVariable("users", usernames);
+	        templateEngine.process(path, ctx, response.getWriter());
+	    }
 	}
 
 }

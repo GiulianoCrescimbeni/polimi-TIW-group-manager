@@ -1,10 +1,11 @@
 package it.polimi.tiw.groupsmanager.controllers;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -22,18 +23,19 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.groupsmanager.beans.User;
+import it.polimi.tiw.groupsmanager.dao.GroupDAO;
 import it.polimi.tiw.groupsmanager.dao.UserDAO;
-import it.polimi.tiw.groupsmanager.exceptions.IllegalCredentialsException;
 
-@WebServlet("/login")
+
+@WebServlet("/creategroup")
 @MultipartConfig
-public class Login extends HttpServlet {
+public class CreateGroup extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	private TemplateEngine templateEngine;
-
-	public Login() {
+	
+	public CreateGroup() {
 		super();
 	}
 	
@@ -61,6 +63,10 @@ public class Login extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(true);
 		if(session.getAttribute("userId") == null) {
 			String path = "/WEB-INF/login.html";
@@ -68,53 +74,78 @@ public class Login extends HttpServlet {
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 			templateEngine.process(path, ctx, response.getWriter());
 		} else {
+			String title = request.getParameter("title");
+			String durationDateParameter = request.getParameter("duration");
+			String minParticipantsParameter = request.getParameter("minimumParticipants");
+			String maxParticipantsParameter = request.getParameter("maximumParticipants");
+			int durationDate = 0;
+			int minParticipants = 0;
+			int maxParticipants = 0;
+
+			String error = null;
+			
+			UserDAO udao = new UserDAO(connection);
+			List<User> users = new ArrayList<>();
+
+			if (title == null || title.isEmpty() || durationDateParameter == null || durationDateParameter.isEmpty() || minParticipantsParameter == null
+					|| minParticipantsParameter.isEmpty() || maxParticipantsParameter == null || maxParticipantsParameter.isEmpty()) {
+				error = "Missing parameters";
+			}
+			
+			try {
+				durationDate = Integer.parseInt(durationDateParameter);
+			} catch (NumberFormatException e) {
+				error = "Incorrect duration date format";
+			}
+			
+			try {
+				minParticipants = Integer.parseInt(minParticipantsParameter);
+			} catch (NumberFormatException e) {
+				error = "Incorrect minimum participants format";
+			}
+			
+			try {
+				maxParticipants = Integer.parseInt(maxParticipantsParameter);
+			} catch (NumberFormatException e) {
+				error = "Incorrect maximum participants format";
+			}
+			
+			if(durationDate <= 0) {
+				error = "Incorrect duration format";
+			}
+			
+			if(minParticipants > maxParticipants || minParticipants <= 0 || maxParticipants <= 0) {
+				error = "Incorrect participants format";
+			}
+			
+			try {
+				users = udao.findAllUsers();
+				if(maxParticipants > users.size() - 1) {
+					error = "The number of maximum users selected is greater than the number of registered users, try again";
+				}
+			} catch (SQLException e) {
+				throw new UnavailableException("Couldn't get db connection");
+			}
+			
+			
+			if (error != null) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.getWriter().println(error);
+				return;
+			}
+			
+			session.setAttribute("groupTitle", title);
+			session.setAttribute("groupDurationDate", durationDate);
+			session.setAttribute("groupMinParticipants", minParticipants);
+			session.setAttribute("groupMaxParticipants", maxParticipants);
+			session.setAttribute("errors", 0);
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			response.sendRedirect(getServletContext().getContextPath() + "/homepage");
-		}
-	}
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String email = request.getParameter("email");
-		String password = request.getParameter("password");
-		
-		String error = null;
-		
-		if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-			error = "Some parameters are empty";
-		}
-		
-		if (error != null) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println(error);
-			return;
-		}
-		
-		UserDAO udao = new UserDAO(connection);
-		try {
-			HttpSession session = request.getSession(true);
-			User user = udao.checkCredentials(email, password);
-			session.setAttribute("userId", user.getId());
-		} catch (IllegalCredentialsException | SQLException | NoSuchAlgorithmException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println(e.getMessage());
-			return;
-		} 
-		
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-		response.sendRedirect(getServletContext().getContextPath() + "/homepage");
-	}
-	
-	public void destroy() {
-		try {
-			if (connection != null) {
-				connection.close();
-			}
-		} catch (SQLException sqle) {
-		}
-	}
 
+		}
+		
+	}
+	
 }

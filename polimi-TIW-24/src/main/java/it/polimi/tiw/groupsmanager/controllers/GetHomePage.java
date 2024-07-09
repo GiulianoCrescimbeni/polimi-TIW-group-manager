@@ -1,13 +1,9 @@
 package it.polimi.tiw.groupsmanager.controllers;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,8 +15,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
-import it.polimi.tiw.groupsmanager.beans.User;
 
 @WebServlet("/homepage")
 @MultipartConfig
@@ -44,17 +38,16 @@ public class GetHomePage extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(true);
-		if(session.getAttribute("user") == null) {
+		String path = RedirectionManager.getInstance().checkRedirection(request);
+		if(path != null) {
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
-			response.sendRedirect(getServletContext().getContextPath() + "/login");
+			response.sendRedirect(getServletContext().getContextPath() + path);
 		} else {
-			String path = "/WEB-INF/homepage.html";
+			path = "/WEB-INF/homepage.html";
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			User user = (User) session.getAttribute("user");
-			ctx.setVariable("username", user.getUsername());
 			templateEngine.process(path, ctx, response.getWriter());
 		}
 	}

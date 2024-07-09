@@ -32,22 +32,19 @@ main {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-label {
-    display: block;
-    margin-bottom: 0.5em;
+.participant {
+    margin-bottom: 1em;
+}
+
+.participant label {
+    display: flex;
+    align-items: center;
     font-weight: bold;
     color: #00796B;
 }
 
-input {
-    display: block;
-    width: 100%;
-    padding: 0.75em;
-    margin-bottom: 1.5em;
-    border: none;
-    border-bottom: 2px solid #004D40;
-    border-radius: 5px;
-    background-color: #E0F7FA;
+.participant input[type="checkbox"] {
+    margin-right: 0.5em;
 }
 
 button {

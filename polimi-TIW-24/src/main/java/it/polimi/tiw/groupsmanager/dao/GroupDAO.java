@@ -187,7 +187,7 @@ public class GroupDAO {
 	}
 	
 	public int createGroup(String title, int activityDuration, int minParticipants, int maxParticipants, int creatorId) throws SQLException {
-		String query = "INSERT into groups (title, activity_duration, minParticipants, maxParticipants, creatorId)   VALUES(?, ?, ?, ?, ?)";
+		String query = "INSERT into groupmanager.groups (title, activity_duration, min_participants, max_participants, creator_id) VALUES (?, ?, ?, ?, ?)";
 		int result = 0;
 		PreparedStatement pstatement = null;
 		try {
@@ -213,7 +213,7 @@ public class GroupDAO {
 	}
 	
 	public int inviteInGroup(int idUser, int idGroup) throws SQLException {
-		String query = "INSERT into groups_invitations (id_user, id_group)   VALUES(?, ?)";
+		String query = "INSERT into groups_invitations (id_user, id_group) VALUES(?, ?)";
 		int result = 0;
 		PreparedStatement pstatement = null;
 		try {

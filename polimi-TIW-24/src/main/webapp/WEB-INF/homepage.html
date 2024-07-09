@@ -7,18 +7,27 @@
     <link rel="stylesheet" href="css/homepage.css">
 </head>
 <body>
-    <div class="upload-container">
-        <div class="upload-card">
-            <h1>Upload Working Group</h1>
-            <form>
-                <input type="text" placeholder="Title" required>
-                <input type="date" placeholder="Date of creation" required>
-                <input type="number" placeholder="Duration in days" required>
-                <input type="number" placeholder="Minimum number of participants" required>
-                <input type="number" placeholder="Maximum number of participants" required>
+    <header>
+        <h1>Working Group Manager</h1>
+    </header>
+    <main>
+        <section class="form-section">
+            <form action="creategroup" method="POST">
+                <label for="title">Title</label>
+                <input name="title" type="text" id="title" placeholder="Title" required>
+                
+                <label for="duration">Duration in days</label>
+                <input name="duration" type="number" id="duration" placeholder="Duration in days" required>
+                
+                <label for="minimumParticipants">Minimum number of participants</label>
+                <input name="minimumParticipants" type="number" id="minimumParticipants" placeholder="Minimum number of participants" required>
+                
+                <label for="maximumParticipants">Maximum number of participants</label>
+                <input name="maximumParticipants" type="number" id="maximumParticipants" placeholder="Maximum number of participants" required>
+                
                 <button type="submit">Upload</button>
             </form>
-        </div>
-    </div>
+        </section>
+    </main>
 </body>
 </html>

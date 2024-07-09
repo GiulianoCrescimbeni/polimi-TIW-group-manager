@@ -6,7 +6,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import it.polimi.tiw.groupsmanager.beans.Group;
 import it.polimi.tiw.groupsmanager.beans.User;
 import it.polimi.tiw.groupsmanager.exceptions.IllegalCredentialsException;
 
@@ -18,39 +21,41 @@ public class UserDAO {
 	}
 	
 	public User findUserById(int userId) throws SQLException {
-		User user = new User();
-		String query = "SELECT id, username, email FROM user WHERE id = ?";
-		
-		ResultSet result = null;
-		PreparedStatement pstatement = null;
-		
-		try {
-			pstatement = con.prepareStatement(query);
-			pstatement.setInt(1, userId);
-			result = pstatement.executeQuery();
-			user.setId(result.getInt("id"));
-			user.setUsername(result.getString("username"));
-			user.setEmail(result.getString("email"));
-		} catch (SQLException e) {
-			throw new SQLException(e);
+	    User user = null;
+	    String query = "SELECT id, username, email FROM users WHERE id = ?";
 
-		} finally {
-			try {
-				if (result != null) {
-					result.close();
-				}
-			} catch (Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				if (pstatement != null) {
-					pstatement.close();
-				}
-			} catch (Exception e2) {
-				throw new SQLException(e2);
-			}
-		}
-		return user;
+	    ResultSet result = null;
+	    PreparedStatement pstatement = null;
+
+	    try {
+	        pstatement = con.prepareStatement(query);
+	        pstatement.setInt(1, userId);
+	        result = pstatement.executeQuery();
+	        if (result.next()) {
+	            user = new User();
+	            user.setId(result.getInt("id"));
+	            user.setUsername(result.getString("username"));
+	            user.setEmail(result.getString("email"));
+	        }
+	    } catch (SQLException e) {
+	        throw new SQLException(e);
+	    } finally {
+	        if (result != null) {
+	            try {
+	                result.close();
+	            } catch (SQLException e1) {
+	                e1.printStackTrace();
+	            }
+	        }
+	        if (pstatement != null) {
+	            try {
+	                pstatement.close();
+	            } catch (SQLException e2) {
+	                e2.printStackTrace();
+	            }
+	        }
+	    }
+	    return user;
 	}
 	
 	public User checkCredentials(String email, String password) throws SQLException, IllegalCredentialsException, NoSuchAlgorithmException {
@@ -95,7 +100,7 @@ public class UserDAO {
 			}
 		}
 		
-		query = "INSERT into users (username, email, password)   VALUES(?, ?, ?)";
+		query = "INSERT into users (username, email, password) VALUES (?, ?, ?)";
 		PreparedStatement pstatement = null;
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -151,5 +156,43 @@ public class UserDAO {
 		}
 		return user;
 	}
+	
+	public List<User> findAllUsers() throws SQLException {
+		List<User> users = new ArrayList<User>();
+		String query = "SELECT * FROM users";
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		try {
+			pstatement = con.prepareStatement(query);
+			result = pstatement.executeQuery();
+			while (result.next()) {
+				User user = new User();
+				user.setId(result.getInt("id"));
+				user.setUsername(result.getString("username"));
+				user.setEmail(result.getString("email"));
+				users.add(user);
+			}
+		} catch (SQLException e) {
+			throw new SQLException(e);
+
+		} finally {
+			try {
+				if (result != null) {
+					result.close();
+				}
+			} catch (Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				if (pstatement != null) {
+					pstatement.close();
+				}
+			} catch (Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return users;
+	}
+	
 	
 }

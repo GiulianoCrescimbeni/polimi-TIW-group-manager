@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invite Users</title>
+    <link rel="stylesheet" href="css/invitation.css">
+</head>
+<body>
+    <header>
+        <h1>Invite Users to Group</h1>
+    </header>
+    <main>
+        <section class="form-section">
+            <form action="/invitation" method="POST">
+                <div th:each="user : ${users}" class="participant">
+                    <label>
+                        <input type="checkbox" th:name="participants" th:value="${user}">
+                        <span th:text="${user}"></span>
+                    </label>
+                </div>
+                <button type="submit">Invite</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
