@@ -6,8 +6,10 @@ body {
 }
 
 header {
-    text-align: center;
-    padding: 2em 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2em;
     background-color: #00796B;
     color: #FFFFFF;
 }
@@ -17,19 +19,78 @@ h1 {
     font-size: 2em;
 }
 
+.logout-form {
+    margin: 0;
+}
+
+.logout-form button {
+    background-color: #004D40;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.logout-form button:hover {
+    background-color: #00796B;
+}
+
 main {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding: 2em 0;
 }
 
-.form-section {
+.groups-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Ensure items align at the top */
     width: 100%;
-    max-width: 600px;
+    max-width: 1200px;
+    gap: 2em; /* Add some space between the sections */
+}
+
+.groups-display {
+    flex: 1; /* Make the group display take equal space */
+    background-color: #FFFFFF;
+    padding: 1.5em;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.groups-display h2 {
+    color: #00796B;
+    margin-bottom: 1em;
+}
+
+.groups-display ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.groups-display li {
+    padding: 0.75em;
+    margin-bottom: 0.5em;
+    border: 1px solid #E0F7FA;
+    border-radius: 5px;
+    background-color: #F1F8E9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    flex: 1; /* Make the form section take equal space */
     background-color: #FFFFFF;
     padding: 2em;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h2 {
+    color: #00796B;
+    margin-bottom: 1em;
 }
 
 label {

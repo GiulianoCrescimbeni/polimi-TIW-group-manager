@@ -9,25 +9,51 @@
 <body>
     <header>
         <h1>Working Group Manager</h1>
+        <form class="logout-form" action="logout" method="GET">
+            <button type="submit">Logout</button>
+        </form>
     </header>
     <main>
-        <section class="form-section">
-            <form action="creategroup" method="POST">
-                <label for="title">Title</label>
-                <input name="title" type="text" id="title" placeholder="Title" required>
-                
-                <label for="duration">Duration in days</label>
-                <input name="duration" type="number" id="duration" placeholder="Duration in days" required>
-                
-                <label for="minimumParticipants">Minimum number of participants</label>
-                <input name="minimumParticipants" type="number" id="minimumParticipants" placeholder="Minimum number of participants" required>
-                
-                <label for="maximumParticipants">Maximum number of participants</label>
-                <input name="maximumParticipants" type="number" id="maximumParticipants" placeholder="Maximum number of participants" required>
-                
-                <button type="submit">Upload</button>
-            </form>
-        </section>
+        <div class="groups-container">
+            <section class="groups-display">
+                <div class="user-groups">
+                    <h2>Groups created by you:</h2>
+                    <div th:if="${#lists.isEmpty(createdGroups)}">
+                        <p>You haven't created any groups yet.</p>
+                    </div>
+                    <ul th:if="${!#lists.isEmpty(createdGroups)}" th:each="group : ${createdGroups}">
+                        <li th:text="${group.title}">Group Title</li>
+                    </ul>
+                </div>
+                <div class="invited-groups">
+                    <h2>Groups where you are invited:</h2>
+                    <div th:if="${#lists.isEmpty(invitedGroups)}">
+                        <p>You are not invited to any groups.</p>
+                    </div>
+                    <ul th:if="${!#lists.isEmpty(invitedGroups)}" th:each="group : ${invitedGroups}">
+                        <li th:text="${group.title}">Group Title</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="form-section">
+                <h2>Create a new group:</h2>
+                <form action="creategroup" method="POST">
+                    <label for="title">Title</label>
+                    <input name="title" type="text" id="title" placeholder="Title" required>
+                    
+                    <label for="duration">Duration in days</label>
+                    <input name="duration" type="number" id="duration" placeholder="Duration in days" required>
+                    
+                    <label for="minimumParticipants">Minimum number of participants</label>
+                    <input name="minimumParticipants" type="number" id="minimumParticipants" placeholder="Minimum number of participants" required>
+                    
+                    <label for="maximumParticipants">Maximum number of participants</label>
+                    <input name="maximumParticipants" type="number" id="maximumParticipants" placeholder="Maximum number of participants" required>
+                    
+                    <button type="submit">Upload</button>
+                </form>
+            </section>
+        </div>
     </main>
 </body>
 </html>

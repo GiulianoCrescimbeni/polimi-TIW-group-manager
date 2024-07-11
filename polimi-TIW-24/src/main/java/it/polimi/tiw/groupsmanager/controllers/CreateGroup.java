@@ -148,4 +148,13 @@ public class CreateGroup extends HttpServlet {
 		
 	}
 	
+	public void destroy() {
+		try {
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (SQLException sqle) {
+		}
+	}
+	
 }

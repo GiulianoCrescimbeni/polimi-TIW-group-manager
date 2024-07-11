@@ -7,7 +7,6 @@ public class Group {
 	private int activityDuration;
 	private int minParticipants;
 	private int maxParticipants;
-	private boolean active;
 	private int creatorId;
 	
 	public Group() {}
@@ -58,14 +57,6 @@ public class Group {
 	
 	public void setMaxParticipants(int maxParticipants) {
 		this.maxParticipants = maxParticipants;
-	}
-	
-	public boolean isActive() {
-		return this.active;
-	}
-	
-	public void setActive(boolean active) {
-		this.active = active;
 	}
 	
 	public int getCreatorId() {

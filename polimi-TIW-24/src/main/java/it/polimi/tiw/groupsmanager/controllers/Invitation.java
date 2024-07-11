@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -73,13 +74,14 @@ public class Invitation extends HttpServlet {
 	        String path = "/WEB-INF/invitation.html";
 	        ServletContext servletContext = getServletContext();
 	        UserDAO udao = new UserDAO(connection);
-	        List<String> usernames = new ArrayList<>();
+	        List<User> users = new ArrayList<>();
 	        try {
-	            List<User> users = udao.findAllUsers();
+	            List<User> allUsers = udao.findAllUsers();
 	            User thisUser = udao.findUserById((int) session.getAttribute("userId"));
-	            users.stream()
-	                 .filter(user -> !user.getUsername().equals(thisUser.getUsername()))
-	                 .forEach(user -> usernames.add(user.getUsername()));
+	            users = allUsers.stream()
+	            		.filter(user -> !user.getUsername().equals(thisUser.getUsername()))
+	            		.collect(Collectors.toList());
+	            
 	        } catch (SQLException e) {
 	            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	            response.getWriter().println(e.getMessage());
@@ -87,9 +89,18 @@ public class Invitation extends HttpServlet {
 	        }
 
 	        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-	        ctx.setVariable("users", usernames);
+	        ctx.setVariable("users", users);
 	        templateEngine.process(path, ctx, response.getWriter());
 	    }
+	}
+	
+	public void destroy() {
+		try {
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (SQLException sqle) {
+		}
 	}
 
 }

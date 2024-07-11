@@ -12,11 +12,11 @@
     </header>
     <main>
         <section class="form-section">
-            <form action="/invitation" method="POST">
+            <form action="submitgroup" method="POST">
                 <div th:each="user : ${users}" class="participant">
                     <label>
-                        <input type="checkbox" th:name="participants" th:value="${user}">
-                        <span th:text="${user}"></span>
+                        <input type="checkbox" th:name="participants" th:value="${user.id}">
+                        <span th:text="${user.username}"></span>
                     </label>
                 </div>
                 <button type="submit">Invite</button>

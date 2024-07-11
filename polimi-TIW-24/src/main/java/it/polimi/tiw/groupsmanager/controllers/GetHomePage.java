@@ -1,9 +1,15 @@
 package it.polimi.tiw.groupsmanager.controllers;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,11 +22,15 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import it.polimi.tiw.groupsmanager.beans.Group;
+import it.polimi.tiw.groupsmanager.dao.GroupDAO;
+
 @WebServlet("/homepage")
 @MultipartConfig
 public class GetHomePage extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+	private Connection connection;
 	private TemplateEngine templateEngine;
 
 	public GetHomePage() {
@@ -29,6 +39,20 @@ public class GetHomePage extends HttpServlet {
 	
 	public void init() throws ServletException {
 		ServletContext context = getServletContext();
+		try {
+			String driver = context.getInitParameter("dbDriver");
+			String url = context.getInitParameter("dbUrl");
+			String user = context.getInitParameter("dbUser");
+			String password = context.getInitParameter("dbPassword");
+			Class.forName(driver);
+			connection = DriverManager.getConnection(url, user, password);
+
+		} catch (ClassNotFoundException e) {
+			throw new UnavailableException("Can't load database driver");
+		} catch (SQLException e) {
+			throw new UnavailableException("Couldn't get db connection");
+		}
+		
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(context);
 		templateResolver.setTemplateMode(TemplateMode.HTML);
 		this.templateEngine = new TemplateEngine();
@@ -46,8 +70,21 @@ public class GetHomePage extends HttpServlet {
 			response.sendRedirect(getServletContext().getContextPath() + path);
 		} else {
 			path = "/WEB-INF/homepage.html";
+			GroupDAO gDAO = new GroupDAO(connection);
+			List<Group> createdGroups = new ArrayList<>();
+			List<Group> invitedGroups = new ArrayList<>();
+	        try {
+				createdGroups = gDAO.findGroupsByCreatorId((int) session.getAttribute("userId"));
+				invitedGroups = gDAO.getGroupsWhereInvited((int) session.getAttribute("userId"));
+			} catch (SQLException e) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	            response.getWriter().println(e.getMessage());
+	            return;
+			}
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+			ctx.setVariable("createdGroups", createdGroups);
+	        ctx.setVariable("invitedGroups", invitedGroups);
 			templateEngine.process(path, ctx, response.getWriter());
 		}
 	}
