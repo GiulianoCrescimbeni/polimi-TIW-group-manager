@@ -77,18 +77,32 @@ public class Register extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username");
+		String name = request.getParameter("name");
+        String surname = request.getParameter("surname");
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		String verifyPassword = request.getParameter("verifypassword");
 		
 		String error = null;
 		
-		if (username == null || username.isEmpty() || email == null || email.isEmpty() || password == null || password.isEmpty() || verifyPassword == null || verifyPassword.isEmpty()) {
+		if (username == null || username.isEmpty() || name == null || name.isEmpty() || surname == null || surname.isEmpty() || email == null || email.isEmpty() || password == null || password.isEmpty() || verifyPassword == null || verifyPassword.isEmpty()) {
 			error = "Missing parameters";
 		}
 		
 		if(!password.equals(verifyPassword)) {
 			error = "Passwords do not match";
+		}
+		
+		UserDAO udao = new UserDAO(connection);
+		
+		try {
+			if(udao.findUserByUsername(username) != null) {
+				error = "Nickname already in use";
+			}
+		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(e.getMessage());
+			return;
 		}
 		
 		if (error != null) {
@@ -97,10 +111,9 @@ public class Register extends HttpServlet {
 			return;
 		}
 		
-		UserDAO udao = new UserDAO(connection);
 		try {
 			HttpSession session = request.getSession(true);
-			User user = udao.createUser(username, email, password);
+			User user = udao.createUser(username, name, surname, email, password);
 			session.setAttribute("userId", user.getId());
 		} catch (IllegalCredentialsException | SQLException | NoSuchAlgorithmException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

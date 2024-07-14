@@ -22,7 +22,9 @@
                         <p>You haven't created any groups yet.</p>
                     </div>
                     <ul th:if="${!#lists.isEmpty(createdGroups)}" th:each="group : ${createdGroups}">
-                        <li th:text="${group.title}">Group Title</li>
+                        <li>
+                            <a th:href="@{/groupdetails(id=${group.id})}" th:text="${group.title}">Group Title</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="invited-groups">
@@ -31,7 +33,9 @@
                         <p>You are not invited to any groups.</p>
                     </div>
                     <ul th:if="${!#lists.isEmpty(invitedGroups)}" th:each="group : ${invitedGroups}">
-                        <li th:text="${group.title}">Group Title</li>
+                        <li>
+                            <a th:href="@{/groupdetails(id=${group.id})}" th:text="${group.title}">Group Title</a>
+                        </li>
                     </ul>
                 </div>
             </section>

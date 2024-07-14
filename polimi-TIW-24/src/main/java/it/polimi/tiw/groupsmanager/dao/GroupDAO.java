@@ -18,43 +18,47 @@ public class GroupDAO {
 	}
 	
 	public Group findGroupById(int groupId) throws SQLException {
-		Group group = new Group();
-		String query = "SELECT * FROM groups WHERE id = ?";
-		
-		ResultSet result = null;
-		PreparedStatement pstatement = null;
-		
-		try {
-			pstatement = con.prepareStatement(query);
-			pstatement.setInt(1, groupId);
-			result = pstatement.executeQuery();
-			group.setId(result.getInt("id"));
-			group.setTitle(result.getString("title"));
-			group.setCreationDate(result.getString("creation_date"));
-			group.setActivityDuration(result.getInt("activity_duration"));
-			group.setMinParticipants(result.getInt("min_participants"));
-			group.setMaxParticipants(result.getInt("max_participants"));
-			group.setCreatorId(result.getInt("creator_id"));
-		} catch (SQLException e) {
-			throw new SQLException(e);
-
-		} finally {
-			try {
-				if (result != null) {
-					result.close();
-				}
-			} catch (Exception e1) {
-				throw new SQLException(e1);
-			}
-			try {
-				if (pstatement != null) {
-					pstatement.close();
-				}
-			} catch (Exception e2) {
-				throw new SQLException(e2);
-			}
-		}
-		return group;
+	    Group group = new Group();
+	    String query = "SELECT * FROM groupmanager.groups WHERE id = ?";
+	    
+	    ResultSet result = null;
+	    PreparedStatement pstatement = null;
+	    
+	    try {
+	        pstatement = con.prepareStatement(query);
+	        pstatement.setInt(1, groupId);
+	        result = pstatement.executeQuery();
+	        
+	        if (result.next()) {
+	            group.setId(result.getInt("id"));
+	            group.setTitle(result.getString("title"));
+	            group.setCreationDate(result.getString("creation_date"));
+	            group.setActivityDuration(result.getInt("activity_duration"));
+	            group.setMinParticipants(result.getInt("min_participants"));
+	            group.setMaxParticipants(result.getInt("max_participants"));
+	            group.setCreatorId(result.getInt("creator_id"));
+	        } else {
+	            throw new SQLException("Group with ID " + groupId + " not found.");
+	        }
+	    } catch (SQLException e) {
+	        throw new SQLException(e);
+	    } finally {
+	        try {
+	            if (result != null) {
+	                result.close();
+	            }
+	        } catch (Exception e1) {
+	            throw new SQLException(e1);
+	        }
+	        try {
+	            if (pstatement != null) {
+	                pstatement.close();
+	            }
+	        } catch (Exception e2) {
+	            throw new SQLException(e2);
+	        }
+	    }
+	    return group;
 	}
 	
 	public List<Group> findGroupsByCreatorId(int creatorId) throws SQLException {
@@ -142,6 +146,39 @@ public class GroupDAO {
 		return groups;
 	}
 	
+	public List<Integer> getInvitedUsers(int groupId) throws SQLException {
+		String query = "SELECT id_user FROM groupmanager.groups_invitations WHERE id_group = ?";
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		List<Integer> invitedUsers = new ArrayList<>();
+		try {
+			pstatement = con.prepareStatement(query);
+			pstatement.setInt(1, groupId);
+			result = pstatement.executeQuery();
+			while (result.next()) {
+				invitedUsers.add(result.getInt("id_user"));
+			}
+		} catch (SQLException e) {
+			throw new SQLException(e);
+
+		} finally {
+			try {
+				if (result != null) {
+					result.close();
+				}
+			} catch (Exception e1) {
+				throw new SQLException(e1);
+			}
+			try {
+				if (pstatement != null) {
+					pstatement.close();
+				}
+			} catch (Exception e2) {
+				throw new SQLException(e2);
+			}
+		}
+		return invitedUsers;
+	}
 	public int createGroup(String title, int activityDuration, int minParticipants, int maxParticipants, int creatorId) throws SQLException {
 	    String query = "INSERT INTO groupmanager.groups (title, activity_duration, min_participants, max_participants, creator_id) VALUES (?, ?, ?, ?, ?)";
 	    int generatedId = -1;
@@ -191,7 +228,7 @@ public class GroupDAO {
 	}
 	
 	public int inviteInGroup(int idUser, int idGroup) throws SQLException {
-		String query = "INSERT into groups_invitations (id_user, id_group) VALUES (?, ?)";
+		String query = "INSERT into groupmanager.groups_invitations (id_user, id_group) VALUES (?, ?)";
 		int result = 0;
 		PreparedStatement pstatement = null;
 		try {

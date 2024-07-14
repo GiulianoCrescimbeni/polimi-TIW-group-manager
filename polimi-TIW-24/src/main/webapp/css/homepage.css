@@ -47,14 +47,14 @@ main {
 .groups-container {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Ensure items align at the top */
+    align-items: flex-start;
     width: 100%;
     max-width: 1200px;
-    gap: 2em; /* Add some space between the sections */
+    gap: 2em;
 }
 
 .groups-display {
-    flex: 1; /* Make the group display take equal space */
+    flex: 1;
     background-color: #FFFFFF;
     padding: 1.5em;
     border-radius: 10px;
@@ -80,8 +80,18 @@ main {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.groups-display li a {
+    text-decoration: none;
+    color: #004D40;
+    font-weight: bold;
+}
+
+.groups-display li a:hover {
+    color: #00796B;
+}
+
 .form-section {
-    flex: 1; /* Make the form section take equal space */
+    flex: 1;
     background-color: #FFFFFF;
     padding: 2em;
     border-radius: 10px;

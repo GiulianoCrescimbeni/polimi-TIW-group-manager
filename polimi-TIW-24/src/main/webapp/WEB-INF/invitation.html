@@ -16,7 +16,9 @@
                 <div th:each="user : ${users}" class="participant">
                     <label>
                         <input type="checkbox" th:name="participants" th:value="${user.id}">
-                        <span th:text="${user.username}"></span>
+                        <span th:text="${user.name}">Name</span>
+                        <span>&nbsp;</span>
+                        <span th:text="${user.surname}"> Surname</span>
                     </label>
                 </div>
                 <button type="submit">Invite</button>

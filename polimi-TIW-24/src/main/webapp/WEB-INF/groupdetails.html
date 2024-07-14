@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Details</title>
+    <link rel="stylesheet" href="css/groupdetails.css">
+</head>
+<body>
+    <header>
+        <h1 th:if="${error == null}" th:text="${group.title}">Group Title</h1>
+        <h1 th:if="${error != null}">Group Not Found</h1>
+    </header>
+    <main>
+        <div th:if="${error == null}">
+            <div class="group-details">
+                <p><strong>Duration:</strong> <span th:text="${group.activityDuration}">0</span> days</p>
+                <p><strong>Minimum Participants:</strong> <span th:text="${group.minParticipants}">0</span></p>
+                <p><strong>Maximum Participants:</strong> <span th:text="${group.maxParticipants}">0</span></p>
+                <p><strong>Creator:</strong> <span th:text="${creator.username}">Username</span></p>
+                <p><strong>Creation Date:</strong> <span th:text="${group.creationDate}">Creation Date</span></p>
+            </div>
+            <section class="invited-users">
+                <h2>Invited Users</h2>
+                <div th:if="${#lists.isEmpty(invitedUsers)}">
+                    <p>No users invited to this group.</p>
+                </div>
+                <ul th:if="${!#lists.isEmpty(invitedUsers)}">
+                    <li th:each="user : ${invitedUsers}">
+                        <div class="user-info">
+                            <span th:text="${user.name}">Name</span>
+                            <span>&nbsp;</span>
+                            <span th:text="${user.surname}">Surname</span>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+        <div th:if="${group == null}">
+            <p th:text="${errorMessage}">Group not found or an error occurred.</p>
+        </div>
+        <form action="homepage" method="GET">
+            <button type="submit">Back to Homepage</button>
+        </form>
+    </main>
+</body>
+</html>

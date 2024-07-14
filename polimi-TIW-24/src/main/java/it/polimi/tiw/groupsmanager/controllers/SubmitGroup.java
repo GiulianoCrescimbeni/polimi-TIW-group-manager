@@ -77,13 +77,10 @@ public class SubmitGroup extends HttpServlet {
 
 	    	if(request.getParameter("participants") == null) {
 	    		error[0] = "No users selected.";
+	    		session.setAttribute("errors", (int) session.getAttribute("errors") + 1);
 	    	} else {
 	    		String[] selectedUserIds = request.getParameterValues("participants");
-		    	
-		    	//if(selectedUserIds == null) {
-		    		
-		    	//}
-
+	    		
 		        List<Integer> userIds = Arrays.stream(selectedUserIds)
 		                                           .map(Integer::parseInt)
 		                                           .collect(Collectors.toList());
@@ -125,24 +122,27 @@ public class SubmitGroup extends HttpServlet {
 						}
 			        });
 			        
-			        GroupDAO gdao = new GroupDAO(connection);
-				    try {
-						int groupId = gdao.createGroup((String) session.getAttribute("groupTitle"), (int) session.getAttribute("groupDurationDate"), (int) session.getAttribute("groupMinParticipants"), (int) session.getAttribute("groupMaxParticipants"), (int) session.getAttribute("userId"));
-						userIds.forEach(id -> {
-							try {
-								gdao.inviteInGroup(id, groupId);
-							} catch (SQLException e) {
-								response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			        if(error[0] == null) {
+			        	GroupDAO gdao = new GroupDAO(connection);
+					    try {
+							int groupId = gdao.createGroup((String) session.getAttribute("groupTitle"), (int) session.getAttribute("groupDurationDate"), (int) session.getAttribute("groupMinParticipants"), (int) session.getAttribute("groupMaxParticipants"), (int) session.getAttribute("userId"));
+							userIds.forEach(id -> {
 								try {
-									response.getWriter().println(e.getMessage());
-								} catch (IOException e1) {
-									e1.printStackTrace();
+									gdao.inviteInGroup(id, groupId);
+								} catch (SQLException e) {
+									response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+									e.printStackTrace();
+									try {
+										response.getWriter().println(e.getMessage());
+									} catch (IOException e1) {
+										e1.printStackTrace();
+									}
 								}
-							}
-						});
-				    } catch (SQLException e) {
-						e.printStackTrace();
-					}
+							});
+					    } catch (SQLException e) {
+							e.printStackTrace();
+						}
+			        }
 		        }
 	    	}
 		    

@@ -88,4 +88,13 @@ public class GetHomePage extends HttpServlet {
 			templateEngine.process(path, ctx, response.getWriter());
 		}
 	}
+	
+	public void destroy() {
+		try {
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (SQLException sqle) {
+		}
+	}
 }

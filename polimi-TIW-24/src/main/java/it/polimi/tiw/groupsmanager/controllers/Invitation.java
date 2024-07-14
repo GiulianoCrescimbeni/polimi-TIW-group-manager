@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,6 +81,7 @@ public class Invitation extends HttpServlet {
 	            User thisUser = udao.findUserById((int) session.getAttribute("userId"));
 	            users = allUsers.stream()
 	            		.filter(user -> !user.getUsername().equals(thisUser.getUsername()))
+	            		.sorted(Comparator.comparing(User::getSurname))
 	            		.collect(Collectors.toList());
 	            
 	        } catch (SQLException e) {
