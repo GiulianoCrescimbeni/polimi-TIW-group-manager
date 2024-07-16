@@ -74,12 +74,24 @@ public class SubmitGroup extends HttpServlet {
 	    } else {
 	    	
 	    	final String[] error = { null };
+	    	
+	    	String[] selectedUserIds = request.getParameterValues("participants");
+	        session.setAttribute("selectedUserIds", selectedUserIds);
 
 	    	if(request.getParameter("participants") == null) {
-	    		error[0] = "No users selected.";
-	    		session.setAttribute("errors", (int) session.getAttribute("errors") + 1);
+	    		if((int) session.getAttribute("errors") == 2) {
+	        		error[0] = "Too many incorrect attempts, recreate the group";
+	        		session.removeAttribute("groupTitle");
+	        		session.removeAttribute("groupDurationDate");
+	        		session.removeAttribute("groupMinParticipants");
+	        		session.removeAttribute("groupMaxParticipants");
+	        		session.removeAttribute("selectedUserIds");
+	        		session.removeAttribute("errors");
+	        	} else {
+	        		error[0] = "No users selected.";
+	        		session.setAttribute("errors", (int) session.getAttribute("errors") + 1);
+	        	}
 	    	} else {
-	    		String[] selectedUserIds = request.getParameterValues("participants");
 	    		
 		        List<Integer> userIds = Arrays.stream(selectedUserIds)
 		                                           .map(Integer::parseInt)
@@ -93,6 +105,7 @@ public class SubmitGroup extends HttpServlet {
 		        		session.removeAttribute("groupDurationDate");
 		        		session.removeAttribute("groupMinParticipants");
 		        		session.removeAttribute("groupMaxParticipants");
+		        		session.removeAttribute("selectedUserIds");
 		        		session.removeAttribute("errors");
 		        	} else {
 		        		if(userIds.size() < (int) session.getAttribute("groupMinParticipants")) {
@@ -147,14 +160,17 @@ public class SubmitGroup extends HttpServlet {
 	    	}
 		    
 		    if (error[0] != null) {
-				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				response.getWriter().println(error[0]);
+		    	response.setStatus(HttpServletResponse.SC_OK);
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.sendRedirect(request.getContextPath() + "/error?message=" + error[0]);
 				return;
 			} else {
 				session.removeAttribute("groupTitle");
         		session.removeAttribute("groupDurationDate");
         		session.removeAttribute("groupMinParticipants");
         		session.removeAttribute("groupMaxParticipants");
+        		session.removeAttribute("selectedUserIds");
         		session.removeAttribute("errors");
 				response.setStatus(HttpServletResponse.SC_OK);
 			    response.setContentType("application/json");

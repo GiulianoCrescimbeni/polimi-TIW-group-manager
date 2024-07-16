@@ -106,8 +106,10 @@ public class Register extends HttpServlet {
 		}
 		
 		if (error != null) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println(error);
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.sendRedirect(request.getContextPath() + "/error?message=" + error);
 			return;
 		}
 		
@@ -116,8 +118,10 @@ public class Register extends HttpServlet {
 			User user = udao.createUser(username, name, surname, email, password);
 			session.setAttribute("userId", user.getId());
 		} catch (IllegalCredentialsException | SQLException | NoSuchAlgorithmException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.sendRedirect(request.getContextPath() + "/error?message=" + e.getMessage());
 			return;
 		} 
 		

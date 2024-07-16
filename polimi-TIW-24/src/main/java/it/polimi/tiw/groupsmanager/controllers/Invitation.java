@@ -1,12 +1,10 @@
 package it.polimi.tiw.groupsmanager.controllers;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +26,6 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.groupsmanager.beans.User;
 import it.polimi.tiw.groupsmanager.dao.UserDAO;
-import it.polimi.tiw.groupsmanager.exceptions.IllegalCredentialsException;
 
 @WebServlet("/invitation")
 @MultipartConfig
@@ -76,22 +73,32 @@ public class Invitation extends HttpServlet {
 	        ServletContext servletContext = getServletContext();
 	        UserDAO udao = new UserDAO(connection);
 	        List<User> users = new ArrayList<>();
+	        
+	        String[] selectedUserIds = (String[]) session.getAttribute("selectedUserIds");
+	        if (selectedUserIds == null) {
+	            selectedUserIds = new String[0];
+	            session.setAttribute("selectedUserIds", selectedUserIds);
+	        }
+	        
 	        try {
 	            List<User> allUsers = udao.findAllUsers();
 	            User thisUser = udao.findUserById((int) session.getAttribute("userId"));
 	            users = allUsers.stream()
-	            		.filter(user -> !user.getUsername().equals(thisUser.getUsername()))
-	            		.sorted(Comparator.comparing(User::getSurname))
-	            		.collect(Collectors.toList());
+	                .filter(user -> !user.getUsername().equals(thisUser.getUsername()))
+	                .sorted(Comparator.comparing(User::getSurname))
+	                .collect(Collectors.toList());
 	            
 	        } catch (SQLException e) {
-	            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	            response.getWriter().println(e.getMessage());
+	            response.setStatus(HttpServletResponse.SC_OK);
+	            response.setContentType("application/json");
+	            response.setCharacterEncoding("UTF-8");
+	            response.sendRedirect(request.getContextPath() + "/error?message=" + e.getMessage());
 	            return;
 	        }
 
 	        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 	        ctx.setVariable("users", users);
+	        ctx.setVariable("selectedUserIds", selectedUserIds);
 	        templateEngine.process(path, ctx, response.getWriter());
 	    }
 	}
