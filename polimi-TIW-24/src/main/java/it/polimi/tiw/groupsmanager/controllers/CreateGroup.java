@@ -69,10 +69,10 @@ public class CreateGroup extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(true);
 		if(session.getAttribute("userId") == null) {
-			String path = "/WEB-INF/login.html";
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			templateEngine.process(path, ctx, response.getWriter());
+			response.setStatus(HttpServletResponse.SC_OK);
+	        response.setContentType("application/json");
+	        response.setCharacterEncoding("UTF-8");
+	        response.sendRedirect(getServletContext().getContextPath() + "/login");
 		} else {
 			String title = request.getParameter("title");
 			String durationDateParameter = request.getParameter("duration");
@@ -120,8 +120,8 @@ public class CreateGroup extends HttpServlet {
 			
 			try {
 				users = udao.findAllUsers();
-				if(maxParticipants > users.size() - 1) {
-					error = "The number of maximum users selected is greater than the number of registered users, try again";
+				if(minParticipants > users.size() - 1) {
+					error = "The number of minimum users selected is greater than the number of registered users, try again";
 				}
 			} catch (SQLException e) {
 				throw new UnavailableException("Couldn't get db connection");
@@ -145,9 +145,7 @@ public class CreateGroup extends HttpServlet {
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			response.sendRedirect(getServletContext().getContextPath() + "/homepage");
-
 		}
-		
 	}
 	
 	public void destroy() {
