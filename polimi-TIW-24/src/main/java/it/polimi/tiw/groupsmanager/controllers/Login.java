@@ -61,21 +61,23 @@ public class Login extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.sendRedirect(getServletContext().getContextPath() + "/homepage");
+		return;
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(true);
-		if(session.getAttribute("userId") == null) {
-			String path = "/WEB-INF/login.html";
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			templateEngine.process(path, ctx, response.getWriter());
-		} else {
+		if(session.getAttribute("userId") != null) { 
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			response.sendRedirect(getServletContext().getContextPath() + "/homepage");
+			return;
 		}
-	}
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		
@@ -95,7 +97,7 @@ public class Login extends HttpServlet {
 		
 		UserDAO udao = new UserDAO(connection);
 		try {
-			HttpSession session = request.getSession(true);
+			session = request.getSession(true);
 			User user = udao.checkCredentials(email, password);
 			session.setAttribute("userId", user.getId());
 		} catch (IllegalCredentialsException | SQLException | NoSuchAlgorithmException e) {

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Registration</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card" id="login-section">
+            <h1>Login</h1>
+            <form action="login" method="POST">
+                <input type="email" placeholder="Email" name="email" required>
+                <input type="password" placeholder="Password" name="password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <div class="register-card" id="register-section">
+            <h1>Registration</h1>
+            <form action="register" method="POST">
+                <input name="username" type="text" placeholder="Username" required>
+                <input name="name" type="text" placeholder="Name" required>
+                <input name="surname" type="text" placeholder="Surname" required>
+                <input name="email" type="email" placeholder="Email" required>
+                <input name="password" type="password" placeholder="Password" required>
+                <input name="verifypassword" type="password" placeholder="Confirm Password" required>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

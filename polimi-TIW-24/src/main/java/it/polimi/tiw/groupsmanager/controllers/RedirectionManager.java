@@ -18,7 +18,7 @@ public class RedirectionManager {
 		HttpSession session = request.getSession(true);
 		String path = null;
 		if(session.getAttribute("userId") == null) {
-			path = "/login";
+			path = "/signup";
 		} else if(session.getAttribute("groupTitle") != null) {
 			path = "/invitation";
 		}

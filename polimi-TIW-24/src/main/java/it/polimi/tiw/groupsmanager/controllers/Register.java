@@ -5,6 +5,8 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -32,6 +34,8 @@ public class Register extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	private TemplateEngine templateEngine;
+	private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
 	public Register() {
 		super();
@@ -61,21 +65,23 @@ public class Register extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.sendRedirect(getServletContext().getContextPath() + "/homepage");
+		return;
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(true);
-		if(session.getAttribute("userId") == null) {
-			String path = "/WEB-INF/register.html";
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			templateEngine.process(path, ctx, response.getWriter());
-		} else {
+		if(session.getAttribute("userId") != null) { 
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			response.sendRedirect(getServletContext().getContextPath() + "/homepage");
+			return;
 		}
-	}
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		String username = request.getParameter("username");
 		String name = request.getParameter("name");
         String surname = request.getParameter("surname");
@@ -89,7 +95,11 @@ public class Register extends HttpServlet {
 			error = "Missing parameters";
 		}
 		
-		if(!password.equals(verifyPassword)) {
+		if (!isValidEmail(email)) {
+			error = "Email is not valid";
+		}
+		
+		if(password != null && !password.equals(verifyPassword)) {
 			error = "Passwords do not match";
 		}
 		
@@ -114,7 +124,7 @@ public class Register extends HttpServlet {
 		}
 		
 		try {
-			HttpSession session = request.getSession(true);
+			session = request.getSession(true);
 			User user = udao.createUser(username, name, surname, email, password);
 			session.setAttribute("userId", user.getId());
 		} catch (IllegalCredentialsException | SQLException | NoSuchAlgorithmException e) {
@@ -130,6 +140,14 @@ public class Register extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		response.sendRedirect(getServletContext().getContextPath() + "/homepage");
 	}
+	
+	private boolean isValidEmail(String email) {
+        if (email == null) {
+            return false;
+        }
+        Matcher matcher = EMAIL_PATTERN.matcher(email);
+        return matcher.matches();
+    }
 	
 	public void destroy() {
 		try {
