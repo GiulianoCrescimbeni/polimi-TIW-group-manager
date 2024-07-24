@@ -138,7 +138,8 @@ public class SubmitGroup extends HttpServlet {
 			        if(error[0] == null) {
 			        	GroupDAO gdao = new GroupDAO(connection);
 					    try {
-							int groupId = gdao.createGroup((String) session.getAttribute("groupTitle"), (int) session.getAttribute("groupDurationDate"), (int) session.getAttribute("groupMinParticipants"), (int) session.getAttribute("groupMaxParticipants"), (int) session.getAttribute("userId"));
+					    	connection.setAutoCommit(false);
+					    	int groupId = gdao.createGroup((String) session.getAttribute("groupTitle"), (int) session.getAttribute("groupDurationDate"), (int) session.getAttribute("groupMinParticipants"), (int) session.getAttribute("groupMaxParticipants"), (int) session.getAttribute("userId"));
 							userIds.forEach(id -> {
 								try {
 									gdao.inviteInGroup(id, groupId);
@@ -146,14 +147,31 @@ public class SubmitGroup extends HttpServlet {
 									response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 									e.printStackTrace();
 									try {
+										connection.rollback();
+										connection.setAutoCommit(true);
+										return;
+									} catch (SQLException e1) {
+										e1.printStackTrace();
+									}
+									
+									try {
 										response.getWriter().println(e.getMessage());
 									} catch (IOException e1) {
 										e1.printStackTrace();
 									}
 								}
 							});
+							connection.commit();
+							connection.setAutoCommit(true);
 					    } catch (SQLException e) {
 							e.printStackTrace();
+							try {
+								connection.rollback();
+								connection.setAutoCommit(true);
+								return;
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							}
 						}
 			        }
 		        }

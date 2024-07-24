@@ -120,7 +120,7 @@ public class CreateGroup extends HttpServlet {
 			
 			try {
 				users = udao.findAllUsers();
-				if(minParticipants > users.size()) {
+				if(minParticipants > users.size() - 1) {
 					error = "The number of minimum users selected is greater than the number of registered users, try again";
 				}
 			} catch (SQLException e) {

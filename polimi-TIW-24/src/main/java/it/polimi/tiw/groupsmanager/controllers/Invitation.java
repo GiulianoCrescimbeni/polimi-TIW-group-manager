@@ -81,7 +81,12 @@ public class Invitation extends HttpServlet {
 	        }
 	        
 	        try {
-	            users = udao.findAllUsers();     
+	            List<User> allUsers = udao.findAllUsers();
+	            User thisUser = udao.findUserById((int) session.getAttribute("userId"));
+	            users = allUsers.stream()
+	                .filter(user -> !user.getUsername().equals(thisUser.getUsername()))
+	                .sorted(Comparator.comparing(User::getSurname))
+	                .collect(Collectors.toList());
 	        } catch (SQLException e) {
 	            response.setStatus(HttpServletResponse.SC_OK);
 	            response.setContentType("application/json");
