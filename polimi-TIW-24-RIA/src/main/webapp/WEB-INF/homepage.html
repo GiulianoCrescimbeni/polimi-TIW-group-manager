@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomePage</title>
+    <link rel="stylesheet" href="css/homepage.css">
+</head>
+<body>
+    <header>
+        <h1>Working Group Manager</h1>
+        <form class="logout-form" action="logout" method="GET">
+            <button type="submit">Logout</button>
+        </form>
+    </header>
+    <main>
+        <div class="groups-container">
+            <section id="groups-display" class="groups-display">
+                <div class="user-groups">
+                    <h2>Groups created by you:</h2>
+                    <div th:if="${#lists.isEmpty(createdGroups)}">
+                        <p>You haven't created any groups yet.</p>
+                    </div>
+                    <ul th:if="${!#lists.isEmpty(createdGroups)}" th:each="group : ${createdGroups}">
+                        <li>
+                            <a href="javascript:void(0)" class="group-link" th:data-group-id="${group.id}" th:text="${group.title}">Group Title</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="invited-groups">
+                    <h2>Groups where you are invited:</h2>
+                    <div th:if="${#lists.isEmpty(invitedGroups)}">
+                        <p>You are not invited to any groups.</p>
+                    </div>
+                    <ul th:if="${!#lists.isEmpty(invitedGroups)}" th:each="group : ${invitedGroups}">
+                        <li>
+                            <a href="javascript:void(0)" class="group-link" th:data-group-id="${group.id}" th:text="${group.title}">Group Title</a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <section class="form-section">
+                <h2>Create a new group:</h2>
+                <form id="create-group-form">
+                    <label for="title">Title</label>
+                    <input name="title" type="text" id="title" placeholder="Title" required>
+                    
+                    <label for="duration">Duration in days</label>
+                    <input name="duration" type="number" id="duration" placeholder="Duration in days" required>
+                    
+                    <label for="minimumParticipants">Minimum number of participants</label>
+                    <input name="minimumParticipants" type="number" id="minimumParticipants" placeholder="Minimum number of participants" required>
+                    
+                    <label for="maximumParticipants">Maximum number of participants</label>
+                    <input name="maximumParticipants" type="number" id="maximumParticipants" placeholder="Maximum number of participants" required>
+                    
+                    <button type="submit">Submit</button>
+                </form>
+            </section>
+        </div>
+
+        <!-- Modale Dettagli Gruppo -->
+        <div id="group-details-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="group-details">
+                    <!-- I dettagli del gruppo saranno caricati qui -->
+                </div>
+                <div id="trash-bin" class="trash-bin">
+            		<img src="images/trashbin.png" alt="Trash Bin" title="Elimina membro">
+        		</div>
+            </div>
+        </div>
+
+        <!-- Modale Form Inviti -->
+        <div id="invitation-form-modal" class="modal">
+        	<div class="modal-content">
+        		<span class=close id=invitation-close>&times;</span>
+        		<form id="invitation-form-id">
+        			<div id="invitation-form">
+        			</div>
+        			<button type="submit">Invite</button><button type="reset">Cancel</button>
+        		</form>
+        	</div>
+        </div>
+        <div id="notification-modal" class="modal">
+            <div class="modal-content small-modal">
+                <span class="close">&times;</span>
+                <div class="modal-body">
+                    <!-- Messaggi di notifica verranno mostrati qui -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="js/homepage.js"></script>
+</body>
+</html>

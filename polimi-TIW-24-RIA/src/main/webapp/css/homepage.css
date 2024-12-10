@@ -1,0 +1,262 @@
+body {
+    background-color: #E0F7FA;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #004D40;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2em;
+    background-color: #00796B;
+    color: #FFFFFF;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.logout-form button {
+    background-color: #004D40;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.logout-form button:hover {
+    background-color: #00796B;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2em 0;
+}
+
+.groups-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1200px;
+    gap: 2em;
+}
+
+.groups-display {
+    flex: 1;
+    background-color: #FFFFFF;
+    padding: 1.5em;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.groups-display h2 {
+    color: #00796B;
+    margin-bottom: 1em;
+}
+
+.groups-display ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.groups-display li {
+    padding: 0.75em;
+    margin-bottom: 0.5em;
+    border: 1px solid #E0F7FA;
+    border-radius: 5px;
+    background-color: #F1F8E9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.groups-display li a {
+    text-decoration: none;
+    color: #004D40;
+    font-weight: bold;
+}
+
+.groups-display li a:hover {
+    color: #00796B;
+}
+
+.form-section {
+    flex: 1;
+    background-color: #FFFFFF;
+    padding: 2em;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h2 {
+    color: #00796B;
+    margin-bottom: 1em;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+    color: #00796B;
+}
+
+input {
+    display: block;
+    width: 100%;
+    padding: 0.75em;
+    margin-bottom: 1.5em;
+    border: none;
+    border-bottom: 2px solid #004D40;
+    border-radius: 5px;
+    background-color: #E0F7FA;
+}
+
+button {
+    background-color: #004D40;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    padding: 0.75em;
+    width: 100%;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button:hover {
+    background-color: #00796B;
+}
+
+/* Stili per la finestra modale */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.4); 
+    padding-top: 60px; 
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+}
+
+.group-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center; /* Center the group title */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.trash-bin {
+    position: absolute; /* Cambia absolute a fixed */
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    z-index: 1000; /* Assicurati che sia sopra altri elementi */
+}
+
+.trash-bin img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Stili per i membri del gruppo come etichette piccole */
+.group-details ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.group-details .member {
+    display: inline-block;
+    margin: 5px;
+    padding: 5px 10px;
+    border: 1px solid #00796B;
+    border-radius: 15px;
+    background-color: #E0F7FA;
+    color: #004D40;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.group-details .member .user-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.group-details .member:hover {
+    background-color: #004D40;
+    color: #E0F7FA;
+}
+
+.small-modal {
+    width: 50%;
+    max-width: 300px;
+    margin: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: fixed;
+}
+
+#notification-modal .modal-body {
+    text-align: center;
+    font-size: 16px;
+    padding: 20px;
+}
+
+.participant input[type="checkbox"] {
+    margin: 0;
+    vertical-align: middle;
+}
+
+.member {
+    padding: 5px 10px; /* Meno padding per renderle più corte */
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px; /* Raggio di curvatura minore per un aspetto più compatto */
+    background-color: #f9f9f9;
+    display: inline-block; /* Per mantenere le etichette in linea */
+    font-size: 0.9em; /* Riduci leggermente la dimensione del font */
+    max-width: 200px; /* Imposta una larghezza massima */
+    white-space: nowrap; /* Impedisci la rottura di riga */
+    overflow: hidden; /* Nascondi il testo che esce dall'etichetta */
+    text-overflow: ellipsis; /* Aggiungi i puntini di sospensione per il testo troncato */
+}

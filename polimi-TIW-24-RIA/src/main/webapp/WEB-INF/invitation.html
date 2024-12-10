@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invite Users</title>
+    <link rel="stylesheet" href="css/invitation.css">
+</head>
+<body>
+    <header>
+        <h1>Invite Users to Group</h1>
+    </header>
+    <main>
+        <section class="form-section">
+            <form action="submitgroup" method="POST">
+                <div th:if="${selectedUserIds == null}" th:attr="th:with='selectedUserIds=${new String[0]}'"></div>
+                
+                <div th:each="user : ${users}" class="participant">
+                    <label>
+                        <input type="checkbox" th:name="participants" th:value="${user.id}" 
+                               th:checked="${#arrays.contains(selectedUserIds, user.id.toString())}">
+                        <span th:text="${user.name}">Name</span>
+                        <span>&nbsp;</span>
+                        <span th:text="${user.surname}">Surname</span>
+                    </label>
+                </div>
+                <button type="submit">Invite</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

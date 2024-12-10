@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="css/register.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <h1>Register</h1>
+            <form action="register" method="POST" id="register-form">
+                <input id="username" name="username" type="text" placeholder="Username" required>
+                <input name="name" type="text" placeholder="Name" required>
+                <input name="surname" type="text" placeholder="Surname" required>
+                <input name="email" type="email" placeholder="Email" required>
+                <input name="password" type="password" placeholder="Password" required>
+                <input name="verifypassword" type="password" placeholder="Confirm Password" required>
+                <button type="submit">Register</button>
+            </form>
+            <div class="link-container">
+                <p>Do you already have an account? <a href="login">Login</a></p>
+            </div>
+            <div id="password-error" class="error-message" style="display: none; color: red; font-weight: bold;"></div>
+            <div id="username-error" class="error-message" style="display: none; color: red; font-weight: bold;"></div>
+        </div>
+    </div>
+    <script src="js/register.js"></script>
+</body>
+</html>
