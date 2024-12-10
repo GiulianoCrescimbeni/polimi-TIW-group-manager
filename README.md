@@ -2,6 +2,9 @@
 
 ### Grade: 28/30 (Hidden requirement successfully inferred and implemented.)
 
+![Screenshot](https://i.postimg.cc/QCJDzP05/Screenshot-2024-12-10-alle-02-39-49.png)
+![Screenshot](https://i.postimg.cc/L4tmhY2X/Screenshot-2024-12-10-alle-02-41-05.png)
+
 ## Project Description
 This project was developed for the **"Web Information Technologies"** course at **Politecnico di Milano**. The application provides a platform for managing and organizing groups using two different implementations: **Pure HTML** and **Rich Internet Application (RIA)**. The project leverages database design and client-server architecture to ensure robust functionality and an intuitive user experience.
 
